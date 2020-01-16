@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 Response::Response() {
-	//
+	this->content = new char[1024 * 5];
 }
 
 void Response::setHeaders(std::list<HttpHeader> _list) {
@@ -15,9 +15,11 @@ void Response::setContent(char *_content) {
 }
 
 bool Response::send(int client) {
-	char *data;
+	char *data = new char[1024 * 5];
 
-	int success = write(client, data, sizeof(data));
+	strcpy(data, this->content);
+
+	int success = write(client, data, strlen(data));
 
 	if (success) {
 		return 1;

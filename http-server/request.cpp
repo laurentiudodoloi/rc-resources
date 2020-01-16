@@ -11,13 +11,10 @@ Request::Request(char *data) {
 	this->method = new char[5];
 
 	if (strstr(data, "GET")) {
-		printf("\nGET Request\n");
 		strcpy(this->method, "GET");
 	} else if (strstr(data, "POST")) {
-		printf("\nPOST Request\n");
 		strcpy(this->method, "POST");
 	} else {
-		printf("\n UNKNOWN Request\n");
 		strcpy(this->method, "UNKNOWN");
 	}
 
@@ -40,8 +37,6 @@ Request::Request(char *data) {
 	}
 
 	*p = '\0';
-
-	printf("\nRoute: %s\n", this->route);
 }
 
 void Request::setHeaders(std::list<HttpHeader> _list) {

@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-std::list<char *> FileManager::getFileList(char *path) {
+std::list<char *> FileManager::getFileList(const char *path) {
 	std::list<char *> list;
 
 	DIR *d = opendir(path);

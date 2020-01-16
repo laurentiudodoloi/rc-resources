@@ -8,7 +8,7 @@ private:
 	FileManager();
 
 public:
-	static std::list<char *> getFileList(char *path);
+	static std::list<char *> getFileList(const char *path);
 	static char *getFileContent(char *file);
 	static bool writeToFile(char *file, char *content);
 };

@@ -1,13 +1,16 @@
 #include "response.h"
+#include <cstring>
+#include <stdio.h>
+#include <unistd.h>
 
 Response::Response() {
 	//
 }
 
-Response::setHeaders(std::list<HttpHeader> _list) {
+void Response::setHeaders(std::list<HttpHeader> _list) {
 }
 
-Response::setContent(char *_content) {
+void Response::setContent(char *_content) {
 	strcpy(this->content, _content);
 }
 
@@ -17,8 +20,8 @@ bool Response::send(int client) {
 	int success = write(client, data, sizeof(data));
 
 	if (success) {
-		return TRUE;
+		return 1;
 	}
 
-	RETURN FALSE;
+	return 0;
 }

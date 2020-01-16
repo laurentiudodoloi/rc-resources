@@ -5,8 +5,9 @@
 #include <cstring>
 #include <stdlib.h>
 #include <unistd.h>
-
 #include <fcntl.h>
+
+#include "routes.h"
 
 Server::Server(const char *_ip_address, int _port) {
 	this->ip_address = new char[strlen(_ip_address)];
@@ -99,13 +100,11 @@ void Server::handleClient(int client) {
 		return ;
 	}
 
-	Request request(data);
+	Request request(buffer);
 
 	Response response = this->handleRequest(request);
 
-	printf("\nRead: %s\n", buffer);
-
-	response->send(client);
+	//response->send(client);
 
 	//write(client, msg, sizeof(msg));
 
@@ -113,5 +112,37 @@ void Server::handleClient(int client) {
 }
 
 Response Server::handleRequest(Request request) {
-	Response response();
+	printf("\nHandle request\n");
+	Response response;
+
+	std::list<HttpHeader> headers;
+	char *content;
+
+	if (strstr(request.method, "GET")) {
+		printf("\nProcess GET Request\n");
+
+		strcpy(content, this->processGetRequest(request.route));
+
+	} else if (strstr(request.method, "POST")) {
+		printf("\nProcess POST Request\n");
+	}
+
+	printf("\nProcessed content: %s\n", content);
+
+	response.setHeaders(headers);
+	response.setContent(content);
+
+	return response;
+}
+
+char *Server::processGetRequest(char *route) {
+	printf("\nProcessing GET: %s\n", route);
+
+	if (strcmp(route, HOME_ROUTE) == 0) {
+		printf("\nRoute: Home\n");
+	} else if (strcmp(route, USERS_ROUTE) == 0) {
+		printf("\nRoute: Users\n");
+	} else if (strcmp(route, LOGIN_ROUTE) == 0) {
+		printf("\nRoute: Login\n");
+	}
 }

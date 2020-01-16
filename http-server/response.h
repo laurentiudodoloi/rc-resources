@@ -1,4 +1,7 @@
-#include "http-header.h"
+#ifndef RESPONSE_H
+#define RESPONSE_H
+
+#include "http-header/http-header.h"
 #include <list>
 
 class Response {
@@ -7,5 +10,9 @@ public:
 	char *content;
 
 	Response();
+	void setHeaders(std::list<HttpHeader> _headers);
+	void setContent(char *_content);
 	bool send(int client);
-}
+};
+
+#endif

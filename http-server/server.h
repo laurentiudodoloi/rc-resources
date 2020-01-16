@@ -2,7 +2,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <list>
+#include "http-header/http-header.h"
 #include "response.h"
+#include "request.h"
 
 class Server {
 public:
@@ -18,5 +20,6 @@ public:
 	void init();
 	void start();
 	void handleClient(int client);
+	char *processGetRequest(char *route);
 	Response handleRequest(Request request);
 };

@@ -1,5 +1,8 @@
+#ifndef REQUEST_H
+#define REQUEST_H
+
 #include <list>
-#include "http-header.h"
+#include "http-header/http-header.h"
 
 class Request {
 public:
@@ -9,5 +12,9 @@ public:
 	char *content;
 
 	Request(char *data);
+	void setHeaders(std::list<HttpHeader> _headers);
+	void setContent(char *_content);
 	bool send(int server);
-}
+};
+
+#endif

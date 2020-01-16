@@ -15,7 +15,7 @@ HttpClient::HttpClient(char *_ipAddress, int _port) {
 	this->ipAddress = new char[strlen(_ipAddress)];
 
 	strcpy(this->ipAddress, _ipAddress);
-	this->port = port;
+	this->port = _port;
 
 	this->init();
 }
@@ -29,9 +29,25 @@ void HttpClient::init() {
 }
 
 int HttpClient::makeConnection() {
+	printf("\nConnecting to %s:%d", this->ipAddress, this->port);
 	int success = connect(this->clientSocket, (struct sockaddr *) &this->serverAddress, sizeof(struct sockaddr));
 
 	if (success == -1) {
-		printf("\nConnection failed\n");
+		return 0;
 	}
+
+	return 1;
+}
+
+char *HttpClient::makeRequest() {
+	const char *msg = "GET / HTTP 1.1\r\n\r\n";
+	char buffer[1024 * 5];
+
+	printf("\nSending %s\n", msg);
+	write(this->clientSocket, msg, strlen(msg));
+
+	int bytesRead = read(this->clientSocket, buffer, sizeof(buffer));
+	buffer[bytesRead] = '\0';
+
+	printf("\nRead: %s\n", buffer);
 }

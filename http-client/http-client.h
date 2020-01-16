@@ -12,4 +12,5 @@ public:
 	HttpClient(char *, int);
 	void init();
 	int makeConnection();
+	char *makeRequest();
 };

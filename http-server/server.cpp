@@ -128,7 +128,7 @@ void Server::start() {
 }
 
 void Server::handleClient(int client) {
-	char buffer[512];
+	char buffer[1024 * 5];
 
 	bzero(&buffer, sizeof(buffer));
 
@@ -137,7 +137,11 @@ void Server::handleClient(int client) {
 		return ;
 	}
 
-	read(client, buffer, sizeof(buffer));
+	int bytesRead = read(client, buffer, sizeof(buffer));
+	buffer[bytesRead] = '\0';
+
+	warn("Read from client: ");
+	warn(buffer);
 
 	if (!strstr(buffer, "HTTP")) {
 		warn("UNKNOWN REQUEST");

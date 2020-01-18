@@ -4,6 +4,10 @@
 
 File Global::currentFile("");
 
+std::string Global::tempText("");
+std::list<std::string> Global::fileList = {};
+MainWindow *Global::window = nullptr;
+
 Global::Global()
 {
     //

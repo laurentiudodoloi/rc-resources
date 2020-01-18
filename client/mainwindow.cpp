@@ -2,15 +2,14 @@
 #include "ui_mainwindow.h"
 #include "qdebug.h"
 #include <QTextStream>
-#include "qdebug.h"
 #include "ui_mydialog.h"
 #include "global.h"
-
 #include "colab-api.h"
 #include "request.h"
-#include "nlohmann/json.hpp"
-
-using json = nlohmann::json;
+#include "ui_texteditor.h"
+#include "texteditor.h"
+#include "file-manager.h"
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,24 +17,21 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ColabApi *api = ColabApi::getInstance();
-
-    Request request;
-
-    json j = json::parse(request.get("/", api->client->clientSocket));
-
-    qDebug("here");
-    auto& files = j["files"];
-
-    std::list<std::string> fileList;
-    for (json::iterator it = files.begin(); it != files.end(); it++) {
-        ui->filelist->addItem(QString((*it).dump().c_str()));
-    }
+    this->setView("home");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setFiles() {
+    ui->filelist->clear();
+
+    for (auto it = Global::fileList.begin(); it != Global::fileList.end(); it++) {
+        qDebug(it->c_str());
+        ui->filelist->addItem(it->c_str());
+    }
 }
 
 void MainWindow::on_downloadBtn_pressed()
@@ -73,8 +69,6 @@ void MainWindow::on_exitBtn_clicked()
 
 void MainWindow::on_filelist_currentTextChanged(const QString &currentText)
 {
-    qDebug((const char *) currentText.toStdString().c_str());
-
     Global::selectFile(File(currentText.toStdString().c_str()));
 }
 
@@ -84,8 +78,17 @@ void MainWindow::on_openBtn_clicked()
         return;
     }
 
-    qDebug("Open file:");
-    qDebug(Global::currentFile.text.toStdString().c_str());
+    ColabApi *api = ColabApi::getInstance();
+
+    std::string content = api->getFileContent(Global::currentFile.text.toStdString());
+    Global::tempText = content;
+
+    TextEditor textEditor;
+
+    textEditor.setFile(Global::currentFile.text);
+
+    textEditor.setModal(true);
+    textEditor.exec();
 }
 
 bool MainWindow::checkFileSelected() {
@@ -111,7 +114,56 @@ void MainWindow::on_deleteBtn_clicked()
     if (!checkFileSelected()) {
         return;
     }
+}
 
-    qDebug("Delete file:");
-    qDebug(Global::currentFile.text.toStdString().c_str());
+void MainWindow::setView(QString name) {
+    ColabApi *api = ColabApi::getInstance();
+
+    ui->errorLabel->setVisible(false);
+    ui->retryBtn->setVisible(false);
+
+    if (!api->connected) {
+        ui->errorLabel->setVisible(true);
+        ui->retryBtn->setVisible(true);
+    }
+
+    if (name.contains("home")) {
+        Global::fileList = api->getFileList();
+
+        ui->filesControls->setVisible(true);
+    } else if (name.contains("downloads")) {
+        Global::fileList = FileManager::getFileList((QDir::homePath().toStdString() + "/Downloads/colab-local").c_str());
+
+        ui->filesControls->setVisible(false);
+    }
+
+    this->setFiles();
+}
+
+void MainWindow::on_myDriveBtn_clicked()
+{
+    setView("home");
+}
+
+void MainWindow::on_sharedBtn_clicked()
+{
+    setView("downloads");
+}
+
+void MainWindow::on_retryBtn_clicked()
+{
+    this->setView("home");
+}
+
+void MainWindow::on_downloadBtn_clicked()
+{
+    if (!checkFileSelected()) {
+        return;
+    }
+
+    ColabApi *api = ColabApi::getInstance();
+
+    int success = api->downloadFile(Global::currentFile.text.toStdString(), QDir::homePath().toStdString() + "/Downloads/colab-local");
+
+    qDebug(QString::number(success).toStdString().c_str());
 }

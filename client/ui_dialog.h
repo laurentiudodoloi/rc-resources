@@ -44,7 +44,7 @@ public:
 
     void retranslateUi(QDialog *Dialog)
     {
-        Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", Q_NULLPTR));
+        Dialog->setWindowTitle(QApplication::translate("Dialog", "Collaborative Notepad - Dialog", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -29,8 +29,6 @@ class Ui_MainWindow
 public:
     QWidget *centralwidget;
     QFrame *sidemenu;
-    QPushButton *recentActivityBtn;
-    QPushButton *downloadsBtn;
     QPushButton *myDriveBtn;
     QPushButton *trashBtn;
     QPushButton *sharedBtn;
@@ -38,11 +36,12 @@ public:
     QFrame *filesContainer;
     QListWidget *filelist;
     QPushButton *listTitleLabel;
+    QPushButton *errorLabel;
+    QPushButton *retryBtn;
     QFrame *filesControls;
     QPushButton *openBtn;
     QPushButton *downloadBtn;
     QPushButton *deleteBtn;
-    QPushButton *pushButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -56,44 +55,18 @@ public:
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         sidemenu = new QFrame(centralwidget);
         sidemenu->setObjectName(QStringLiteral("sidemenu"));
-        sidemenu->setGeometry(QRect(20, 80, 141, 451));
+        sidemenu->setGeometry(QRect(10, 10, 141, 531));
         sidemenu->setStyleSheet(QLatin1String("background: #fff;\n"
 "border: 1px solid #ddd;\n"
 "border-radius: 4px;"));
         sidemenu->setFrameShape(QFrame::StyledPanel);
         sidemenu->setFrameShadow(QFrame::Raised);
-        recentActivityBtn = new QPushButton(sidemenu);
-        recentActivityBtn->setObjectName(QStringLiteral("recentActivityBtn"));
-        recentActivityBtn->setGeometry(QRect(10, 90, 121, 41));
-        QFont font;
-        font.setBold(false);
-        font.setWeight(50);
-        recentActivityBtn->setFont(font);
-        recentActivityBtn->setCursor(QCursor(Qt::OpenHandCursor));
-        recentActivityBtn->setStyleSheet(QLatin1String("background: none;\n"
-"border: none;\n"
-"border-bottom: 1px solid #ddd;\n"
-"padding: 12px 0;\n"
-"text-align: center;\n"
-"font-weight: 400;\n"
-"color: #004159;\n"
-"border-radius: 0;"));
-        recentActivityBtn->setAutoDefault(false);
-        downloadsBtn = new QPushButton(sidemenu);
-        downloadsBtn->setObjectName(QStringLiteral("downloadsBtn"));
-        downloadsBtn->setGeometry(QRect(10, 130, 121, 41));
-        downloadsBtn->setFont(font);
-        downloadsBtn->setCursor(QCursor(Qt::OpenHandCursor));
-        downloadsBtn->setStyleSheet(QLatin1String("background: none;\n"
-"border: none;\n"
-"padding: 12px 0;\n"
-"text-align: center;\n"
-"font-weight: 400;\n"
-"color: #004159;"));
-        downloadsBtn->setAutoDefault(false);
         myDriveBtn = new QPushButton(sidemenu);
         myDriveBtn->setObjectName(QStringLiteral("myDriveBtn"));
         myDriveBtn->setGeometry(QRect(10, 10, 121, 41));
+        QFont font;
+        font.setBold(false);
+        font.setWeight(50);
         myDriveBtn->setFont(font);
         myDriveBtn->setCursor(QCursor(Qt::OpenHandCursor));
         myDriveBtn->setStyleSheet(QLatin1String("background: none;\n"
@@ -107,7 +80,7 @@ public:
         myDriveBtn->setAutoDefault(false);
         trashBtn = new QPushButton(sidemenu);
         trashBtn->setObjectName(QStringLiteral("trashBtn"));
-        trashBtn->setGeometry(QRect(10, 360, 121, 41));
+        trashBtn->setGeometry(QRect(10, 440, 121, 41));
         trashBtn->setFont(font);
         trashBtn->setCursor(QCursor(Qt::OpenHandCursor));
         trashBtn->setStyleSheet(QLatin1String("background: none;\n"
@@ -135,7 +108,7 @@ public:
         sharedBtn->setAutoDefault(false);
         exitBtn = new QPushButton(sidemenu);
         exitBtn->setObjectName(QStringLiteral("exitBtn"));
-        exitBtn->setGeometry(QRect(10, 400, 121, 41));
+        exitBtn->setGeometry(QRect(10, 480, 121, 41));
         exitBtn->setFont(font);
         exitBtn->setCursor(QCursor(Qt::OpenHandCursor));
         exitBtn->setStyleSheet(QLatin1String("background: none;\n"
@@ -147,27 +120,15 @@ public:
         exitBtn->setAutoDefault(false);
         filesContainer = new QFrame(centralwidget);
         filesContainer->setObjectName(QStringLiteral("filesContainer"));
-        filesContainer->setGeometry(QRect(180, 80, 601, 381));
+        filesContainer->setGeometry(QRect(180, 10, 601, 451));
         filesContainer->setStyleSheet(QLatin1String("background: #fff;\n"
 "border: 1px solid #ddd;\n"
 "border-radius: 4px;"));
         filesContainer->setFrameShape(QFrame::StyledPanel);
         filesContainer->setFrameShadow(QFrame::Raised);
         filelist = new QListWidget(filesContainer);
-        QBrush brush(QColor(0, 0, 0, 255));
-        brush.setStyle(Qt::SolidPattern);
-        QFont font1;
-        font1.setPointSize(12);
-        QListWidgetItem *__qlistwidgetitem = new QListWidgetItem(filelist);
-        __qlistwidgetitem->setFont(font1);
-        __qlistwidgetitem->setForeground(brush);
-        new QListWidgetItem(filelist);
-        new QListWidgetItem(filelist);
-        new QListWidgetItem(filelist);
-        new QListWidgetItem(filelist);
-        new QListWidgetItem(filelist);
         filelist->setObjectName(QStringLiteral("filelist"));
-        filelist->setGeometry(QRect(10, 50, 581, 321));
+        filelist->setGeometry(QRect(10, 50, 581, 381));
         filelist->viewport()->setProperty("cursor", QVariant(QCursor(Qt::OpenHandCursor)));
         filelist->setStyleSheet(QLatin1String("border: none;\n"
 "padding: 6px 8px;\n"
@@ -175,7 +136,7 @@ public:
 "border-radius: 6px;"));
         listTitleLabel = new QPushButton(filesContainer);
         listTitleLabel->setObjectName(QStringLiteral("listTitleLabel"));
-        listTitleLabel->setGeometry(QRect(20, 10, 131, 31));
+        listTitleLabel->setGeometry(QRect(20, 10, 151, 31));
         listTitleLabel->setFont(font);
         listTitleLabel->setCursor(QCursor(Qt::OpenHandCursor));
         listTitleLabel->setStyleSheet(QLatin1String("background: none;\n"
@@ -186,9 +147,29 @@ public:
 "font-size: 18px;\n"
 "padding-bottom: 4px;"));
         listTitleLabel->setAutoDefault(false);
+        errorLabel = new QPushButton(filesContainer);
+        errorLabel->setObjectName(QStringLiteral("errorLabel"));
+        errorLabel->setGeometry(QRect(310, 10, 171, 31));
+        errorLabel->setFont(font);
+        errorLabel->setCursor(QCursor(Qt::OpenHandCursor));
+        errorLabel->setStyleSheet(QLatin1String("background: none;\n"
+"border: none;\n"
+"text-align: right;\n"
+"font-weight: 400;\n"
+"border-radius: 0;\n"
+"font-size:  14px;\n"
+"padding-bottom: 4px;\n"
+"color: crimson;"));
+        errorLabel->setAutoDefault(false);
+        retryBtn = new QPushButton(filesContainer);
+        retryBtn->setObjectName(QStringLiteral("retryBtn"));
+        retryBtn->setGeometry(QRect(500, 10, 89, 31));
+        retryBtn->setCursor(QCursor(Qt::OpenHandCursor));
+        retryBtn->setStyleSheet(QLatin1String("background: #00adce;\n"
+"color: #fff;"));
         filesControls = new QFrame(centralwidget);
         filesControls->setObjectName(QStringLiteral("filesControls"));
-        filesControls->setGeometry(QRect(180, 480, 601, 51));
+        filesControls->setGeometry(QRect(180, 490, 601, 51));
         filesControls->setStyleSheet(QLatin1String("background: #fff;\n"
 "border: 1px solid #ddd;\n"
 "border-radius: 4px;"));
@@ -215,9 +196,6 @@ public:
         openBtn->raise();
         deleteBtn->raise();
         downloadBtn->raise();
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QStringLiteral("pushButton"));
-        pushButton->setGeometry(QRect(60, 30, 89, 25));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
@@ -236,34 +214,16 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Collaborative Notepad", Q_NULLPTR));
-        recentActivityBtn->setText(QApplication::translate("MainWindow", "Recent activity", Q_NULLPTR));
-        downloadsBtn->setText(QApplication::translate("MainWindow", "Downloads", Q_NULLPTR));
-        myDriveBtn->setText(QApplication::translate("MainWindow", "My drive", Q_NULLPTR));
+        myDriveBtn->setText(QApplication::translate("MainWindow", "Drive", Q_NULLPTR));
         trashBtn->setText(QApplication::translate("MainWindow", "Trash", Q_NULLPTR));
-        sharedBtn->setText(QApplication::translate("MainWindow", "Shared", Q_NULLPTR));
+        sharedBtn->setText(QApplication::translate("MainWindow", "Downloads", Q_NULLPTR));
         exitBtn->setText(QApplication::translate("MainWindow", "Exit", Q_NULLPTR));
-
-        const bool __sortingEnabled = filelist->isSortingEnabled();
-        filelist->setSortingEnabled(false);
-        QListWidgetItem *___qlistwidgetitem = filelist->item(0);
-        ___qlistwidgetitem->setText(QApplication::translate("MainWindow", "file-1.txt", Q_NULLPTR));
-        QListWidgetItem *___qlistwidgetitem1 = filelist->item(1);
-        ___qlistwidgetitem1->setText(QApplication::translate("MainWindow", "file-2.txt", Q_NULLPTR));
-        QListWidgetItem *___qlistwidgetitem2 = filelist->item(2);
-        ___qlistwidgetitem2->setText(QApplication::translate("MainWindow", "file-3.txt", Q_NULLPTR));
-        QListWidgetItem *___qlistwidgetitem3 = filelist->item(3);
-        ___qlistwidgetitem3->setText(QApplication::translate("MainWindow", "file-4.txt", Q_NULLPTR));
-        QListWidgetItem *___qlistwidgetitem4 = filelist->item(4);
-        ___qlistwidgetitem4->setText(QApplication::translate("MainWindow", "photo-1.png", Q_NULLPTR));
-        QListWidgetItem *___qlistwidgetitem5 = filelist->item(5);
-        ___qlistwidgetitem5->setText(QApplication::translate("MainWindow", "photo-2.jpg", Q_NULLPTR));
-        filelist->setSortingEnabled(__sortingEnabled);
-
-        listTitleLabel->setText(QApplication::translate("MainWindow", "Your drive", Q_NULLPTR));
+        listTitleLabel->setText(QApplication::translate("MainWindow", "Remote resources", Q_NULLPTR));
+        errorLabel->setText(QApplication::translate("MainWindow", "Error: Network error", Q_NULLPTR));
+        retryBtn->setText(QApplication::translate("MainWindow", "Retry", Q_NULLPTR));
         openBtn->setText(QApplication::translate("MainWindow", "Open", Q_NULLPTR));
         downloadBtn->setText(QApplication::translate("MainWindow", "Download", Q_NULLPTR));
         deleteBtn->setText(QApplication::translate("MainWindow", "Delete", Q_NULLPTR));
-        pushButton->setText(QApplication::translate("MainWindow", "PushButton", Q_NULLPTR));
     } // retranslateUi
 
 };

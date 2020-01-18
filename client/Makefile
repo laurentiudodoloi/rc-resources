@@ -35,7 +35,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = client1.0.0
-DISTDIR = /home/administrator/projects/collaborative-notepad/client/.tmp/client1.0.0
+DISTDIR = /home/administrator/projects/collaborative-notepad/resources/client/.tmp/client1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -53,6 +53,7 @@ OBJECTS_DIR   = ./
 SOURCES       = main.cpp \
 		colab-api.cpp \
 		dialog.cpp \
+		file-manager.cpp \
 		file.cpp \
 		global.cpp \
 		header-parser.cpp \
@@ -60,12 +61,15 @@ SOURCES       = main.cpp \
 		http-header.cpp \
 		mainwindow.cpp \
 		mydialog.cpp \
-		request.cpp moc_dialog.cpp \
+		request.cpp \
+		texteditor.cpp moc_dialog.cpp \
 		moc_mainwindow.cpp \
-		moc_mydialog.cpp
+		moc_mydialog.cpp \
+		moc_texteditor.cpp
 OBJECTS       = main.o \
 		colab-api.o \
 		dialog.o \
+		file-manager.o \
 		file.o \
 		global.o \
 		header-parser.o \
@@ -74,9 +78,11 @@ OBJECTS       = main.o \
 		mainwindow.o \
 		mydialog.o \
 		request.o \
+		texteditor.o \
 		moc_dialog.o \
 		moc_mainwindow.o \
-		moc_mydialog.o
+		moc_mydialog.o \
+		moc_texteditor.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -152,6 +158,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		client.pro colab-api.h \
 		dialog.h \
+		file-manager.h \
 		file.h \
 		global.h \
 		header-parser.h \
@@ -159,9 +166,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		http-header.h \
 		mainwindow.h \
 		mydialog.h \
-		request.h main.cpp \
+		request.h \
+		texteditor.h main.cpp \
 		colab-api.cpp \
 		dialog.cpp \
+		file-manager.cpp \
 		file.cpp \
 		global.cpp \
 		header-parser.cpp \
@@ -169,7 +178,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		http-header.cpp \
 		mainwindow.cpp \
 		mydialog.cpp \
-		request.cpp
+		request.cpp \
+		texteditor.cpp
 QMAKE_TARGET  = client
 DESTDIR       = 
 TARGET        = client
@@ -178,7 +188,7 @@ TARGET        = client
 first: all
 ####### Build rules
 
-$(TARGET): ui_dialog.h ui_mainwindow.h ui_mydialog.h $(OBJECTS)  
+$(TARGET): ui_dialog.h ui_mainwindow.h ui_mydialog.h ui_texteditor.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: client.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -351,9 +361,9 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents colab-api.h dialog.h file.h global.h header-parser.h http-client.h http-header.h mainwindow.h mydialog.h request.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp colab-api.cpp dialog.cpp file.cpp global.cpp header-parser.cpp http-client.cpp http-header.cpp mainwindow.cpp mydialog.cpp request.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents dialog.ui mainwindow.ui mydialog.ui $(DISTDIR)/
+	$(COPY_FILE) --parents colab-api.h dialog.h file-manager.h file.h global.h header-parser.h http-client.h http-header.h mainwindow.h mydialog.h request.h texteditor.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp colab-api.cpp dialog.cpp file-manager.cpp file.cpp global.cpp header-parser.cpp http-client.cpp http-header.cpp mainwindow.cpp mydialog.cpp request.cpp texteditor.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents dialog.ui mainwindow.ui mydialog.ui texteditor.ui $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -385,29 +395,34 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_dialog.cpp moc_mainwindow.cpp moc_mydialog.cpp
+compiler_moc_header_make_all: moc_dialog.cpp moc_mainwindow.cpp moc_mydialog.cpp moc_texteditor.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_dialog.cpp moc_mainwindow.cpp moc_mydialog.cpp
+	-$(DEL_FILE) moc_dialog.cpp moc_mainwindow.cpp moc_mydialog.cpp moc_texteditor.cpp
 moc_dialog.cpp: dialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include dialog.h -o moc_dialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include dialog.h -o moc_dialog.cpp
 
 moc_mainwindow.cpp: mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
 moc_mydialog.cpp: mydialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/home/administrator/projects/collaborative-notepad/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mydialog.h -o moc_mydialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mydialog.h -o moc_mydialog.cpp
+
+moc_texteditor.cpp: texteditor.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/home/administrator/projects/collaborative-notepad/resources/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include texteditor.h -o moc_texteditor.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_dialog.h ui_mainwindow.h ui_mydialog.h
+compiler_uic_make_all: ui_dialog.h ui_mainwindow.h ui_mydialog.h ui_texteditor.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_dialog.h ui_mainwindow.h ui_mydialog.h
+	-$(DEL_FILE) ui_dialog.h ui_mainwindow.h ui_mydialog.h ui_texteditor.h
 ui_dialog.h: dialog.ui \
 		/usr/lib/qt5/bin/uic
 	/usr/lib/qt5/bin/uic dialog.ui -o ui_dialog.h
@@ -419,6 +434,10 @@ ui_mainwindow.h: mainwindow.ui \
 ui_mydialog.h: mydialog.ui \
 		/usr/lib/qt5/bin/uic
 	/usr/lib/qt5/bin/uic mydialog.ui -o ui_mydialog.h
+
+ui_texteditor.h: texteditor.ui \
+		/usr/lib/qt5/bin/uic
+	/usr/lib/qt5/bin/uic texteditor.ui -o ui_texteditor.h
 
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
@@ -435,7 +454,9 @@ main.o: main.cpp mainwindow.h \
 		colab-api.h \
 		http-client.h \
 		request.h \
-		http-header.h
+		http-header.h \
+		global.h \
+		file.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 colab-api.o: colab-api.cpp colab-api.h \
@@ -448,11 +469,15 @@ dialog.o: dialog.cpp dialog.h \
 		ui_dialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dialog.o dialog.cpp
 
+file-manager.o: file-manager.cpp file-manager.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file-manager.o file-manager.cpp
+
 file.o: file.cpp file.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file.o file.cpp
 
 global.o: global.cpp global.h \
-		file.h
+		file.h \
+		mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o global.o global.cpp
 
 header-parser.o: header-parser.cpp header-parser.h \
@@ -469,7 +494,14 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		ui_mainwindow.h \
 		ui_mydialog.h \
 		global.h \
-		file.h
+		file.h \
+		colab-api.h \
+		http-client.h \
+		request.h \
+		http-header.h \
+		ui_texteditor.h \
+		texteditor.h \
+		file-manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 mydialog.o: mydialog.cpp mydialog.h \
@@ -481,6 +513,17 @@ request.o: request.cpp request.h \
 		header-parser.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o request.o request.cpp
 
+texteditor.o: texteditor.cpp texteditor.h \
+		ui_texteditor.h \
+		global.h \
+		file.h \
+		mainwindow.h \
+		request.h \
+		http-header.h \
+		colab-api.h \
+		http-client.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o texteditor.o texteditor.cpp
+
 moc_dialog.o: moc_dialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dialog.o moc_dialog.cpp
 
@@ -489,6 +532,9 @@ moc_mainwindow.o: moc_mainwindow.cpp
 
 moc_mydialog.o: moc_mydialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mydialog.o moc_mydialog.cpp
+
+moc_texteditor.o: moc_texteditor.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_texteditor.o moc_texteditor.cpp
 
 ####### Install
 

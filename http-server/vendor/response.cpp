@@ -19,6 +19,8 @@ bool Response::send(int client) {
 
 	strcpy(data, this->content);
 
+	printf("\n\nSend: %s\n", data);
+
 	int success = write(client, data, strlen(data));
 
 	if (success) {

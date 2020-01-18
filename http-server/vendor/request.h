@@ -3,7 +3,7 @@
 
 #include <list>
 #include "http-header.h"
-#include <string>
+#include "header-parser.h"
 
 class Request {
 public:
@@ -12,13 +12,11 @@ public:
 	std::list<HttpHeader> headers;
 	char *content;
 
-    Request();
 	Request(char *data);
 	void setHeaders(std::list<HttpHeader> _headers);
 	void setContent(char *_content);
+	char *getContent();
 	bool send(int server);
-    std::string get(std::string resource, int server);
-    std::string post(std::string resource, std::string content, int server);
 };
 
 #endif

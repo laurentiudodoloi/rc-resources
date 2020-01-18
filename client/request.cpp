@@ -79,11 +79,10 @@ bool Request::send(int server) {
 }
 
 std::string Request::get(std::string resource, int server) {
-    qDebug("GET Request.");
     char buffer[1024 * 5];
 
     char firstLine[128];
-    strcpy(firstLine, "GET ");
+    strcpy(firstLine, "GET /");
     strcat(firstLine, resource.c_str());
     strcat(firstLine, " HTTP /1.1 \r\n");
 
@@ -93,7 +92,6 @@ std::string Request::get(std::string resource, int server) {
     strcpy(data, firstLine);
     strcat(data, parsedHeaders);
 
-    qDebug("Write");
     qDebug(data);
 
     write(server, data, strlen(data));
@@ -102,7 +100,38 @@ std::string Request::get(std::string resource, int server) {
 
     buffer[n] = '\0';
 
-    qDebug(buffer);
+    qDebug(("Response: " + std::string(buffer)).c_str());
+
+    return std::string(buffer);
+}
+
+std::string Request::post(std::string resource, std::string content, int server) {
+    char buffer[1024 * 5];
+
+    char firstLine[128];
+    strcpy(firstLine, "POST /");
+    strcat(firstLine, resource.c_str());
+    strcat(firstLine, " HTTP /1.1 \r\n");
+
+    char *parsedHeaders = HeaderParser::encode(this->headers);
+
+    char *data = new char[strlen(firstLine) + strlen(parsedHeaders) - 1];
+    strcpy(data, firstLine);
+    strcat(data, parsedHeaders);
+    strcat(data, "\r\n");
+    strcat(data, "Content: ");
+    strcat(data, content.c_str());
+    strcat(data, "\r\n\r\n");
+
+    qDebug(data);
+
+    write(server, data, strlen(data));
+
+    int n = read(server, buffer, sizeof(buffer));
+
+    buffer[n] = '\0';
+
+    qDebug(("Response: " + std::string(buffer)).c_str());
 
     return std::string(buffer);
 }

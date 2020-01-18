@@ -3,7 +3,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <stdio.h>
-#include "http-header/header-parser.h"
 
 Request::Request(char *data) {
 	this->headers = HeaderParser::decode(data);
@@ -37,6 +36,22 @@ Request::Request(char *data) {
 	}
 
 	*p = '\0';
+
+	for (auto it = this->headers.begin(); it != this->headers.end(); it++) {
+		if (strcmp((*it).key, "Content") == 0) {
+			this->setContent((*it).value);
+		}
+	}
+}
+
+void Request::setContent(char *_content) {
+	this->content = new char[sizeof(_content)];
+
+	strcpy(this->content, _content);
+}
+
+char *Request::getContent() {
+	return this->content;
 }
 
 void Request::setHeaders(std::list<HttpHeader> _list) {

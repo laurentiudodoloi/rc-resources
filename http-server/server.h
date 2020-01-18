@@ -1,10 +1,14 @@
+#ifndef SERVER_H
+#define SERVER_H
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <list>
-#include "http-header/http-header.h"
-#include "response.h"
-#include "request.h"
+#include "vendor/http-header.h"
+#include "vendor/response.h"
+#include "vendor/request.h"
+#include "vendor/file-manager/file-manager.h"
 
 class Server {
 public:
@@ -21,5 +25,8 @@ public:
 	void start();
 	void handleClient(int client);
 	char *processGetRequest(char *route);
+	char *processPostRequest(Request request);
 	Response handleRequest(Request request);
 };
+
+#endif

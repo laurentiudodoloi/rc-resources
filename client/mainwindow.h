@@ -15,6 +15,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     bool checkFileSelected();
+    Ui::MainWindow *ui;
+
+    void setView(QString name);
+    void setFiles();
 
 private slots:
 
@@ -30,8 +34,16 @@ private slots:
 
     void on_deleteBtn_clicked();
 
+    void on_myDriveBtn_clicked();
+
+    void on_sharedBtn_clicked();
+
+    void on_retryBtn_clicked();
+
+    void on_downloadBtn_clicked();
+
 private:
-    Ui::MainWindow *ui;
+    //
 };
 
 #endif // MAINWINDOW_H

@@ -1,20 +1,18 @@
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef RESPONSE_H
+#define RESPONSE_H
 
+#include "http-header.h"
 #include <list>
-#include "http-header/http-header.h"
 
-class Request {
+class Response {
 public:
-	char *method;
-	char *route;
 	std::list<HttpHeader> headers;
 	char *content;
 
-	Request(char *data);
+	Response();
 	void setHeaders(std::list<HttpHeader> _headers);
 	void setContent(char *_content);
-	bool send(int server);
+	bool send(int client);
 };
 
 #endif

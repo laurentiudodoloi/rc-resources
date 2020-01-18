@@ -1,14 +1,10 @@
 #include "server.h"
-#include "request.h"
-#include "response.h"
 #include <stdio.h>
 #include <cstring>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "file-manager/file-manager.h"
 #include <string>
-//#include "json-parser/json-parser.h"
 #include "nlohmann/json.hpp"
 
 #define RED "\x1B[31m"
@@ -19,7 +15,27 @@
 
 using json = nlohmann::json;
 
-#include "routes.h"
+#include "config/routes.h"
+
+char *trim(char *text) {
+	char *p = text;
+	while (*p == ' ') {
+		p++;
+	}
+
+	char *result = new char[sizeof(p)];
+	p = result;
+
+	while (*p != ' ' && *p != '\0') {
+		p++;
+	}
+
+	if (*p == ' ') {
+		*p = '\0';
+	}
+
+	return result;
+}
 
 void log_request(const char *method, const char *route) {
 	printf("\n" BLUE);
@@ -95,8 +111,9 @@ void Server::init() {
 
 	log("OK.", GREEN, 0);
 
-	log("", NORMAL);
-	log("I AM READY", GREEN, 0);
+	log("READY", GREEN);
+
+	log("Waiting for connections...", YELLOW);
 }
 
 void Server::start() {
@@ -106,9 +123,9 @@ void Server::start() {
 		int client = accept(this->serverSocket, NULL, NULL);
 
 		if (client != -1) {
-			log("Client connected.", GREEN);
 			//this->clients[this->clients_number] = client;
 			this->clients_number++;
+			log("Client connected", GREEN);
 
 			int pid = fork();
 
@@ -140,9 +157,6 @@ void Server::handleClient(int client) {
 	int bytesRead = read(client, buffer, sizeof(buffer));
 	buffer[bytesRead] = '\0';
 
-	warn("Read from client: ");
-	warn(buffer);
-
 	if (!strstr(buffer, "HTTP")) {
 		warn("UNKNOWN REQUEST");
 		return ;
@@ -170,6 +184,8 @@ Response Server::handleRequest(Request request) {
 		strcpy(content, this->processGetRequest(request.route));
 	} else if (strstr(request.method, "POST")) {
 		log_request("POST ", (const char *)request.route);
+
+		strcpy(content, this->processPostRequest(request));
 	}
 
 	response.setHeaders(headers);
@@ -178,29 +194,71 @@ Response Server::handleRequest(Request request) {
 	return response;
 }
 
+char *Server::processPostRequest(Request request) {
+	char *response = new char[64];
+
+	char *content = request.getContent();
+
+	char *p = content;
+	while (*p != '\r' && *p != '\0') {
+		p++;
+	}
+	*p = '\0';
+
+	if (strstr(request.route, "write")) {
+		char *p = request.route;
+		int i = 0;
+
+		p++;
+		while (*p != '/') {
+			p++;
+		}
+		p++;
+
+		char *fullPath = new char[9 + strlen(p)];
+		strcpy(fullPath, "./public/");
+		strcat(fullPath, p);
+		int position = 4;
+
+		int success = FileManager::writeToFile(fullPath, content);
+
+		if (success) {
+			strcpy(response, "File updated.");
+		} else {
+			strcpy(response, "error");
+		}
+	}
+
+	return response;
+}
+
 char *Server::processGetRequest(char *route) {
 	char *content = new char[1024 *5];
 
 	if (strcmp(route, HOME_ROUTE) == 0) {
-		std::list<char *> files = FileManager::getFileList("./public");
+		std::list<std::string> files = FileManager::getFileList("./public");
 
-		std::list<std::string> l;
+		json j_list(files);
 
-		for (auto it = files.begin(); it != files.end(); it++) {
-			if (strcmp(*it, " ") != 0) {
-				l.push_back(std::string(*it));
-			}
-		}
+		error(j_list.dump().c_str());
 
-		json j_list(l);
-
-		json j = {
-			{ "files", j_list }
-		};
-
-		std::string s = j.dump();
+		std::string s = j_list.dump();
 
 		strcpy(content, s.c_str());
+	} else {
+		char *p = route;
+
+		while (*p == '/') {
+			p++;
+		}
+
+		char *fullPath = new char[9 + strlen(p)];
+		strcpy(fullPath, "./public/");
+		strcat(fullPath, p);
+
+		if (FileManager::fileExists(fullPath)) {
+			strcpy(content, FileManager::getFileContent(fullPath));
+		}
 	}
 
 	return content;

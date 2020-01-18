@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     colab-api.cpp \
     dialog.cpp \
+    file-manager.cpp \
     file.cpp \
     global.cpp \
     header-parser.cpp \
@@ -28,7 +29,8 @@ SOURCES += main.cpp \
     http-header.cpp \
     mainwindow.cpp \
     mydialog.cpp \
-    request.cpp
+    request.cpp \
+    texteditor.cpp
 
 INCLUDEPATH += .
 
@@ -38,11 +40,13 @@ QT += widgets
 FORMS += \
     dialog.ui \
     mainwindow.ui \
-    mydialog.ui
+    mydialog.ui \
+    texteditor.ui
 
 HEADERS += \
     colab-api.h \
     dialog.h \
+    file-manager.h \
     file.h \
     global.h \
     header-parser.h \
@@ -50,4 +54,5 @@ HEADERS += \
     http-header.h \
     mainwindow.h \
     mydialog.h \
-    request.h
+    request.h \
+    texteditor.h

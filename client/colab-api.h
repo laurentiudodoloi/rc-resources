@@ -2,6 +2,7 @@
 #define COLAB_API_H
 
 #include <string>
+#include <list>
 #include "http-client.h"
 
 class ColabApi {
@@ -13,9 +14,11 @@ private:
 public:
     static ColabApi *getInstance();
     HttpClient *client;
+    bool connected = false;
 
     void init();
-    std::string getFileList();
+    std::list<std::string> getFileList();
+    bool downloadFile(std::string file, std::string path);
     std::string getFileContent(std::string file);
     std::string writeToFile(std::string file, std::string content);
 };
